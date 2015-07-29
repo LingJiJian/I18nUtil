@@ -1,0 +1,12 @@
+{
+	"scan_suffix":
+	[
+		".lua"
+	],
+	"ignore_path":
+	[
+		"data",
+		"proto",
+		"i18n"
+	]
+}

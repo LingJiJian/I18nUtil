@@ -1,2 +1,2 @@
-# I18nUtil
+# LangTransUtil
 Language extraction tool
