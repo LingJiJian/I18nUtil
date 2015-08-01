@@ -1,4 +1,3 @@
-# LangTransUtil
 Language extraction tool
 =====
 
