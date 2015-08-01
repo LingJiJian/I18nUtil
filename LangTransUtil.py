@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*- 
 # 扫描中文工具
+# author B-y 342854406@qq.com
 
 import os
 import wx
@@ -8,17 +9,17 @@ import lk
 
 class MyFrame(wx.Frame):
   def __init__(self):
-    wx.Frame.__init__(self, None, -1, "i18n Util", size = (500, 305))
+    wx.Frame.__init__(self, None, -1, "Language Trans Util", size = (500, 305))
     panel = wx.Panel(self)
 
     wx.StaticText(panel,-1,u"扫描目录:",(10,10))
     self.input_indir = wx.TextCtrl(panel, -1,"", pos=(80, 10),size=(330,22))
-    self.btnIn = wx.Button(panel,label=u"浏览", pos=(410,10),size=(70,22))
+    self.btnIn = wx.Button(panel,label=u"浏览", pos=(410,5),size=(70,22))
     self.btnIn.Bind(wx.EVT_BUTTON,self.onBtnInDir)
 
     wx.StaticText(panel,-1,u"输出目录:",(10,35))
     self.input_outdir = wx.TextCtrl(panel, -1,"", pos=(80, 35),size=(330,22))
-    self.btnOut = wx.Button(panel,label=u"浏览", pos=(410,35),size=(70,22))
+    self.btnOut = wx.Button(panel,label=u"浏览", pos=(410,30),size=(70,22))
     self.btnOut.Bind(wx.EVT_BUTTON,self.onBtnOutDir)
 
     self.text_log = wx.TextCtrl(panel,-1,"",pos=(10,65),size=(470,170),style=wx.TE_MULTILINE)
