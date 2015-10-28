@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*- 
+# author B-y 342854406@qq.com
 
 import os
 import re
@@ -51,6 +52,24 @@ class FileManager:
 		pFile = open(os.path.join(path,"config.json"),"r")
 		self.__config = json.loads(pFile.read())
 
+		keyArr = []
+		valArr = []
+		self._tmpkeyValFlag = False
+		if os.path.exists(self.__outDir):
+			def onHandle(tmpStr):
+				if self._tmpkeyValFlag:
+					valArr.append(tmpStr);
+				else:
+					keyArr.append(tmpStr);
+				self._tmpkeyValFlag = not self._tmpkeyValFlag;
+
+			pFile = open(self.__outDir,"r")
+			self.__scanWordInContent(pFile.read(),onHandle)
+			for i,v in enumerate(keyArr):
+				self.__tranWordDic[ keyArr[i] ] = valArr[i]
+		else:
+			self.__tranWordDic = {}
+
 	#扫描目录
 	def __scanInDir(self,path):
 		arr = os.listdir(path)
@@ -69,14 +88,24 @@ class FileManager:
 							self.__tranWordArrs[filepath] = []
 						finally:
 							pFile.close()
-		
+	#执行扫描行为
 	def __progressFiles(self):
-		idx = 0
 		for path,content in self.__scanFilePaths.items():
-			idx += 1
-			tmpStr = ""
-			markFlag = False
-			for i,ch in enumerate(content):
+			def onHandle(tmpStr):
+				if self.has_zh(tmpStr.decode('utf-8')):
+					key = "\"a"+self.__getWordIdx()+"\"";
+					if not self.__tranWordDic.has_key(key) :			
+						self.__tranWordDic[ key ] = tmpStr
+						self.__tranWordArrs[path].append({"key":key,"val":tmpStr})
+			self.__scanWordInContent(content,onHandle)
+
+		self.__logCallFunc({"isFinish":True})
+
+	#在文件内容中扫描中文
+	def __scanWordInContent(self,content,func):
+		tmpStr = ""
+		markFlag = False
+		for i,ch in enumerate(content):
 				if ch == "\"":
 					if content[i-1] == "\\":
 						if markFlag:
@@ -87,15 +116,10 @@ class FileManager:
 
 					if markFlag == False :
 						tmpStr += "\""
-						if self.has_zh(tmpStr.decode('utf-8')):
-							key = "\"a"+self.__getWordIdx()+"\"";
-							self.__tranWordArrs[path].append({"key":key,"val":tmpStr})					
-							self.__tranWordDic[ key ] = tmpStr
+						func(tmpStr)
 						tmpStr = ""
-
 				if markFlag :
-					tmpStr += ch	
-		self.__logCallFunc({"isFinish":True})
+					tmpStr += ch
 
 	def has_zh(self,txt):
 		zhPattern = re.compile(u'[\u4e00-\u9fa5]+')
@@ -125,6 +149,7 @@ class FileManager:
 			else:
 				return str(idx);
 
+	#输出文件
 	def __exportFile(self):
 		content = "i18n = {} \n";
 		for k,v in self.__tranWordDic.items():
